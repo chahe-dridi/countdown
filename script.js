@@ -1,23 +1,37 @@
+// ... (existing code)
 
- 
 const preload = () => {
-
-  let manager = new THREE.LoadingManager();
-  manager.onLoad = function() { 
-    const environment = new Environment( typo, particle );
-  }
-
-  var typo = null;
-  const loader = new THREE.FontLoader( manager );
-  const font = loader.load('https://res.cloudinary.com/dydre7amr/raw/upload/v1612950355/font_zsd4dr.json', function ( font ) { typo = font; });
-  const particle = new THREE.TextureLoader( manager ).load( 'https://res.cloudinary.com/dfvtkoboz/image/upload/v1605013866/particle_a64uzf.png');
-
-}
-
-/*if ( document.readyState === "complete" || (document.readyState !== "loading" && !document.documentElement.doScroll))
-  preload ();
-else*/
-  document.addEventListener("DOMContentLoaded", preload ); 
+	let manager = new THREE.LoadingManager();
+  
+	manager.onLoad = function () {
+	  const environment = new Environment(typo, particle);
+	};
+  
+	let typo = null;
+	const loader = new THREE.FontLoader(manager);
+	const font = loader.load(
+	  'https://res.cloudinary.com/dydre7amr/raw/upload/v1612950355/font_zsd4dr.json',
+	  function (font) {
+		typo = font;
+  
+		// Create environment with the initial text
+		const environment = new Environment(typo, particle);
+		
+		// Update text every second
+		setInterval(() => {
+		  const newText = new Date().toLocaleString();
+		  environment.updateText(newText);
+		}, 1000);
+	  }
+	);
+  
+	const particle = new THREE.TextureLoader(manager).load(
+	  'https://res.cloudinary.com/dfvtkoboz/image/upload/v1605013866/particle_a64uzf.png'
+	);
+  };
+  
+  document.addEventListener('DOMContentLoaded', preload);
+  
 
 class Environment {
 
@@ -38,7 +52,10 @@ class Environment {
     window.addEventListener( 'resize', this.onWindowResize.bind( this ));
     
   }
-
+  updateText(newText) {
+    // Call the updateText method in CreateParticles class
+    this.createParticles.updateText(newText);
+  }
   setup(){ 
 
     this.createParticles = new CreateParticles( this.scene, this.font,             this.particle, this.camera, this.renderer );
@@ -122,12 +139,13 @@ class CreateParticles {
 		 
 	}
 	 
-	 
-	updateText() {
-		// Update the text with the current date
-		this.data.text = new Date().toLocaleString();
-		this.updateTextParticles();
-	}
+	updateText(newText) {
+    // Update the text with the provided value
+    this.data.text = newText;
+
+    // Call the updateTextParticles method to update the existing particles
+    this.updateTextParticles();
+  }
 	
 	
 
